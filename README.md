@@ -1,5 +1,6 @@
 # Sliding-Puzzle
-Sliding puzzle game in assembly
+Sliding puzzle game in assembly.
+TASM 16-bit on Dosbox
 
 ## Quick instructions:
 - On the menu screen, press a number key from 2 to 5 to choose the N dimension, then press another number key from 2 to 5 to choose the M - dimenion
