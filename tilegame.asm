@@ -814,16 +814,6 @@ tiles dw 26 dup(26) ; 25 tiles max + 1 for end, 26 marks end of array, tile orde
 ; tiles generated, each index represents tile of respective number, if 26 at index, tile of index number does not exist
 filledTiles dw 26 dup(26)
 
-
-
-;tiles dw 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,0,26,26,26,26,26,26
-;tiles dw 12,1,10,2,7,11,4,14,5,0,9,15,8,13,6,3,26,26,26,26,26,26,26,26,26,26
-;tiles1 dw 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0,26,26,26,26,26,26,26,26,26,26
-;solvablePuzzle dw 6,1,10,2,7,11,4,14,5,0,9,15,8,12,13,3,26,26,26,26,26,26,26,26,26,26
-;tiles dw 1,2,3,4,5,6,7,8,9,10,11,12,13,15,14,0,26,26,26,26,26,26,26,26,26,26
-;tiles dw 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0,26,26,26,26,26,26,26,26,26,26
-;tiles dw 1,2,3,4,5,6,8,7,0,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26
-
 tileValues dw 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25
 
 seed dw ?
@@ -864,7 +854,6 @@ start:
 	call Game
 
 
-
 Game proc
 	call MenuScreen
 	
@@ -883,7 +872,6 @@ Game proc
 
 	ret
 endp Game
-
 
 
 PlayGame proc
@@ -905,6 +893,7 @@ checkClick:
 	mov cx, 0 ; column index
 	mov bx, 0 ; index of tile x coord
 	mov si, cursor_x
+	
 checkX:
 	
 	; check if  cursor_x is in tileCoordX[ax] to tileCoordX[ax] + 30
@@ -916,15 +905,11 @@ checkX:
 	
 	cmp si, ax
 	JNLE nextX 				; if out of button range skip to next x
-		
-	
-	
 	
 	; is in X range of tile
 	mov si, cursor_y
 	jmp checkY
 
-	
 nextX:
 	inc bx
 	inc bx
@@ -934,11 +919,9 @@ nextX:
 	JNE checkX
 		
 	; skip to end, not in range of any tiles
-	
 	JMP endClickCheck
 	
 checkY:
-	
 	cmp si, tileCoordY[bx]
 	JNGE nextRow
 	; if cursor y greater or equal than coord at y
@@ -948,15 +931,10 @@ checkY:
 	cmp si, ax
 	JNLE nextRow
 	; is in X and Y range of tile, tile is bx-th tile of puzzle tiles array
-	
 	mov cursor_tile, bx	; save selected tile
-	
-
 	
 	; do stuff on click
 	call MovePiece
-	
-	
 	JMP endClickCheck
 	
 nextRow:
@@ -982,12 +960,12 @@ incrementIndex:
 	
 	;end of check, no found tile if reached here
 endClickCheck:
-	
 	pop cx
 	pop bx
 	pop ax
 	
 	call PlayGame
+	
 	ret
 endp PlayGame
 
@@ -1106,7 +1084,6 @@ checkRight:
 	; si index of empty tile
 	; bx index of selected tile
 	; switch values in index
-	
 
 	push ax
 	push cx
@@ -1140,10 +1117,7 @@ checkRight:
 	mov ax, 1h				; show cursor again
 	int 33h 
 	
-	
-	
 doNothing:
-	
 	pop si
 	pop di
 	pop dx
@@ -1156,7 +1130,6 @@ endp MovePiece
 
 
 DisplayFrame proc
-
 	push ax
 	push cx
 	push dx
@@ -1199,7 +1172,6 @@ fillBackground:
 	mov al, 6 	; color
 	mov ah, 0ch ; put pixel
 
-
 ; draw horizontal lines	
 	push cx
 	push dx
@@ -1216,7 +1188,6 @@ drawHLine:
 	cmp cx, hLineLength
 	JNE drawHLine 
 	
-	
 	mov cx, 20  ; reset to start of col
 	
 	inc si 		; si as counter
@@ -1230,7 +1201,6 @@ drawHLine:
 ; draw vectical lines	
 	pop dx
 	pop cx
-	
 	
 	dec vLineLength
 	dec dx
@@ -1260,7 +1230,6 @@ drawVLine:
 	JNE drawVLine
 	
 	ret
-		
 endp DisplayFrame
 
 
@@ -1331,7 +1300,6 @@ FindTileCoords proc
 	mov dx, 22 	; initial y coord		
 
 NextCoord:
-
 	mov tileCoordX[bx], cx ; save x coord
 	mov tileCoordY[bx], dx ; save y coord
 
@@ -1363,7 +1331,6 @@ endp FindTileCoords
 
 
 DrawTiles proc
-	
 	push ax
 	push bx
 	push si
@@ -1374,8 +1341,6 @@ DrawTiles proc
 	mov bx, 0	; tile index
 	
 	mov si, 0  	; tile drawing counter
-	
-
 
 NextTile:
 	mov di, 30	; tile width
@@ -1405,7 +1370,6 @@ drawTile:
 
 	cmp cx, di
 	JNE drawTile
-	
 
 	mov cx, di  			; reset to start of col
 	sub cx, 30				; get back original x
@@ -1418,7 +1382,6 @@ drawTile:
 	
 	inc bx 	; increment 2 byte 
 	inc bx
-	
 	
 	mov ax, tiles[bx]			; use ax to hold curr tile number to cmp
 	cmp ax, 26					; 26 end of puzzle tiles
@@ -1435,29 +1398,24 @@ drawTile:
 endp DrawTiles
 
 
-
 SetCursor proc 
-
 	;initialize the mouse
-
 	mov ax, 0h
 	int 33h
 
 	;show mouse
-
 	mov ax, 1h
 	int 33h
 
 	ret
-
 endp SetCursor
 
 
 GetMouseState proc 
-	mov  ax, 3       ;SERVICE TO GET MOUSE STATE.
+	mov  ax, 3      ; service to get mouse state
 	int  33h
 
-	shr cx, 1			; coords returned relative to 640x200, shift x coords to right 
+	shr cx, 1		; coords returned relative to 640x200, shift x coords to right 
 
 	ret
 endp GetMouseState
@@ -1477,7 +1435,6 @@ CheckWin proc
 	JNE noWin	
 
 check:
-	
 	mov dx, tiles[bx] 	; dx save curr tile
 	inc bx
 	inc bx
@@ -1526,13 +1483,12 @@ waitForEsc:
 	
 restartGame:
 	; refresh tiles array for next game
-	
 	push bx
 	
 	mov bx, 0	; index
 	mov cx, 0	; counter
+	
 resetTilesLoop:
-
 	mov tiles[bx], 26		; set value back to 26
 	inc bx
 	inc bx
@@ -1543,15 +1499,12 @@ resetTilesLoop:
 
 	pop bx
 
-
-
 	call clearScreen
 	call Game
 	
 ;-----------------------------
 	
 noWin:
-
 	pop dx
 	pop cx
 	pop bx
@@ -1723,7 +1676,6 @@ startMenu:
 	mov dx, offset option4
 	mov ah,9
 	int 21h			; print option4 msg
-	
 
 waitForInput:
 	mov ah, 0
@@ -1779,8 +1731,6 @@ getRow:
 	mov dx, offset leftArrow
 	mov ah,9
 	int 21h			; print leftArrow msg
-
-
 
 waitForInputM:
 	mov ah, 0
@@ -1877,9 +1827,7 @@ checkEsc:
 	
 	JMP startMenu
 	
-
 exitMenu:
-
 	pop di
 	pop si
 	pop dx
@@ -1889,6 +1837,7 @@ exitMenu:
 
 	ret
 endp MenuScreen
+
 
 clearScreen proc
 
@@ -1913,7 +1862,6 @@ GeneratePuzzle proc
 	mov bx, 0	; counter
 	
 getNumberTiles:
-
 	add ax, w
 	
 	inc bx
@@ -1940,6 +1888,7 @@ CreatePuzzle:
 	mov si, puzzleLength ; last index
 
 	mov ax, seed
+	
 fillPuzzle:
 	; Expects: AX = The seed
 	; Returns: AX = The randomly generated number
@@ -1995,8 +1944,8 @@ fillPuzzle:
 	
 	mov bx, 0	; index
 	mov cx, 0	; counter
+	
 arrayLoop:
-
 	mov filledTiles[bx], 26		; set value back to 26
 	inc bx
 	inc bx
@@ -2006,7 +1955,6 @@ arrayLoop:
 	JNE arrayLoop
 
 	pop bx
-
 
 	pop di
 	pop si
@@ -2128,13 +2076,10 @@ goNext:
 	mov di, tiles[bx]
 	cmp di, 26		; while it is still at end indicator, do not start count yet
 	JE goNext
-	
-	;tiles dw 12,1,10,2,7,11,4,14,5,0,9,15,8,13,6,3,26,26,26,26,26,26,26,26,26,26
 
 countTiles:
 	; start counting 
 	mov di, tiles[bx]
-	
 	
 	cmp di, 0 				; check if empty tile
 	JE checkInversions
@@ -2151,7 +2096,6 @@ countTiles:
 	mov dx, w				; reset counter
 	
 	JMP countTiles			; repeat if not
-
 
 checkInversions:
 	; check if inversion even or odd
@@ -2177,10 +2121,8 @@ checkInversions:
 	
 	JMP inversionOdd 	; else inversion is odd, row must be even
 
-
 inversionEven:
-	; cx/row must be odd,
-
+	; cx/row must be odd
 	push ax		; save ax, bx, registers used for mod
 	push bx
 	push dx
@@ -2201,10 +2143,8 @@ inversionEven:
 	
 	JMP notSolvable
 
-
 inversionOdd:
 	; cx/row must be even 
-
 	push ax		; save ax, bx, registers used for mod
 	push bx
 	push dx
@@ -2225,20 +2165,14 @@ inversionOdd:
 	
 	JMP notSolvable
 	
-	
 solvable:
 	; puzzle is created
 	JMP puzzleCreated
 
-
 notSolvable:
-
-
 	JMP CreatePuzzle
 
-
 puzzleCreated:
-	
 	pop di
 	pop si
 	pop dx
@@ -2260,7 +2194,6 @@ GenerateRandomNumber proc
 
 	; Expects: AX = The seed
 	; Returns: AX = The randomly generated number
-
 	push	bx
 	push	cx
 	push	dx
@@ -2290,12 +2223,12 @@ GenerateRandomNumber proc
 	ret
 endp GenerateRandomNumber
 
+
 ConvertRandomNumberToPercent proc
 	; random number to range from 0 to 99.
 
 	; Expects: AX = The random number input
 	; Returns: AX = A random number from 0 to 99.
-
 	push	bx
 	push	cx
 	push	dx
@@ -2315,12 +2248,12 @@ ConvertRandomNumberToPercent proc
 	ret	
 endp ConvertRandomNumberToPercent
 
+
 ConvertRandomNumberToRange proc
 	; random num to a range.
 
 	; Expects: AX = The random number, BX = The smallest range, DX = The highest range
 	; Returs: AX = The randomly generated number
-
 	push	bx
 	push	cx
 	push	dx
@@ -2344,7 +2277,6 @@ ConvertRandomNumberToRange proc
 	pop	bx
 
 	ret
-	
 endp ConvertRandomNumberToRange	
 
 GenerateSeed proc
